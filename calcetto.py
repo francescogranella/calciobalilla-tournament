@@ -32,7 +32,7 @@ def get_all_possible_matches(players):
     return all_possible_matches
 
 data = fetch_data()
-players = data.drop(columns='Esterni').columns.to_list()
+players = sorted(data.drop(columns='Esterni').columns.to_list())
 all_possible_teams = get_all_possible_teams(players)
 all_possible_teams = pd.DataFrame(all_possible_teams, columns=['player1', 'player2'])
 # all_possible_matches = pd.DataFrame(all_possible_matches, columns=['team1', 'team2'])
@@ -69,7 +69,7 @@ df = pd.merge(all_possible_teams, t, how='outer').fillna(0)\
     .merge(score.rename(columns={'player': 'player1', 'score': 'score1'}), on='player1')\
     .merge(score.rename(columns={'player': 'player2', 'score': 'score2'}), on='player2')\
     .assign(team_score=lambda x: (x.score1+x.score2/2))\
-    .assign(in_team_imbalance=lambda x: np.abs(x.team_score))\
+    .assign(in_team_imbalance=lambda x: np.abs(x.score1 - x.score2))\
     .sort_values(by=['nmatches', 'in_team_imbalance'], ascending=[True, True])
 
 if player1 != player2 != player3 != player4:
