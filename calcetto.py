@@ -96,6 +96,9 @@ if player1 != player2 != player3 != player4:
     st.write(f'Match imbalance: {match_imbalance}\n\n')
 else:
     st.write(':red[Duplicate player]')
+
+avg_imbalance = np.round(np.nanmean(data[data<0].values), 2)
+st.write(f'Average imbalance (score difference): {avg_imbalance}')
 st.write('-'*80)
 st.write('List of possible teams')
 st.dataframe(df)
