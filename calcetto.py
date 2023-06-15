@@ -70,14 +70,30 @@ df = pd.merge(all_possible_teams, t, how='outer').fillna(0)\
     .merge(score.rename(columns={'player': 'player2', 'score': 'score2'}), on='player2')\
     .assign(team_score=lambda x: (x.score1+x.score2/2))\
     .assign(in_team_imbalance=lambda x: np.abs(x.score1 - x.score2))\
-    .sort_values(by=['nmatches', 'in_team_imbalance'], ascending=[True, True])
+    .sort_values(by=['nmatches', 'in_team_imbalance'], ascending=[True, True]).rename(columns={'score1': 'avg_score_player1', 'score2': 'avg_score_player2'})
+
+player1 = 'Leo'
+player2 = 'Stefania'
+player3 = 'Matteo C'
+player4 = 'Francesco G'
 
 if player1 != player2 != player3 != player4:
     player1, player2 = sorted((player1, player2))
     player3, player4 = sorted((player3, player4))
+
+    team1 = (player1, player2)
+    team2 = (player3, player4)
+
+    try:
+        nprevious = m.loc[ (m.team1==team1) & (m.team2==team2) | ((m.team1==team2) & (m.team2==team1)), 'nmatches'].iloc[0]
+    except IndexError:
+        nprevious = 0
+
     chosen_team = df[((df.player1==player1) & (df.player2==player2)) | ((df.player1==player3) & (df.player2==player4))]
     match_imbalance = np.round(chosen_team.team_score.diff().iloc[1], 2)
     st.dataframe(chosen_team)
+    st.dataframe()
+    st.write(f'Number of previous matches: {nprevious}')
     st.write(f'Match imbalance: {match_imbalance}\n\n')
 else:
     st.write(':red[Duplicate player]')
