@@ -89,7 +89,7 @@ if player1 != player2 != player3 != player4:
     except IndexError:
         nprevious = 0
 
-    chosen_team = df[((df.player1==player1) & (df.player2==player2)) | ((df.player1==player3) & (df.player2==player4))]
+    chosen_team = df[((df.player1==player1) & (df.player2==player2)) | ((df.player1==player3) & (df.player2==player4))].reset_index(drop=True)
     match_imbalance = np.round(chosen_team.team_score.diff().iloc[1], 2)
     st.dataframe(chosen_team)
     st.write(f'Number of previous matches: {nprevious}')
@@ -101,4 +101,4 @@ avg_imbalance = np.round(np.nanmean(data[data<0].values), 2)
 st.write(f'Average imbalance (score difference): {avg_imbalance}')
 st.write('-'*80)
 st.write('List of possible teams')
-st.dataframe(df)
+st.dataframe(df.reset_index(drop=True))
