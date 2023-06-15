@@ -40,10 +40,10 @@ all_possible_teams = pd.DataFrame(all_possible_teams, columns=['player1', 'playe
 score = data.drop(columns='Esterni').mean().reset_index().rename(columns={'index': 'player', 0: 'score'})
 
 # %% INterface
-player1 = st.selectbox(label='player1', options=players)
-player2 = st.selectbox(label='player2', options=players)
-player3 = st.selectbox(label='player3', options=players)
-player4 = st.selectbox(label='player4', options=players)
+player1 = st.selectbox(label='Player 1, Team 1', options=players)
+player2 = st.selectbox(label='Player 2, Team 1', options=players)
+player3 = st.selectbox(label='Player 1, Team 2', options=players)
+player4 = st.selectbox(label='Player 2, Team 2', options=players)
 
 
 # %%
