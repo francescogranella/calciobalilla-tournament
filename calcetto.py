@@ -92,7 +92,6 @@ if player1 != player2 != player3 != player4:
     chosen_team = df[((df.player1==player1) & (df.player2==player2)) | ((df.player1==player3) & (df.player2==player4))]
     match_imbalance = np.round(chosen_team.team_score.diff().iloc[1], 2)
     st.dataframe(chosen_team)
-    st.dataframe()
     st.write(f'Number of previous matches: {nprevious}')
     st.write(f'Match imbalance: {match_imbalance}\n\n')
 else:
