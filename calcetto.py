@@ -72,11 +72,6 @@ df = pd.merge(all_possible_teams, t, how='outer').fillna(0)\
     .assign(in_team_imbalance=lambda x: np.abs(x.score1 - x.score2))\
     .sort_values(by=['nmatches', 'in_team_imbalance'], ascending=[True, True]).rename(columns={'score1': 'avg_score_player1', 'score2': 'avg_score_player2'})
 
-player1 = 'Leo'
-player2 = 'Stefania'
-player3 = 'Matteo C'
-player4 = 'Francesco G'
-
 if player1 != player2 != player3 != player4:
     player1, player2 = sorted((player1, player2))
     player3, player4 = sorted((player3, player4))
