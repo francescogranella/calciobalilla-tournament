@@ -2,7 +2,6 @@ import gspread
 import streamlit as st
 import pandas as pd
 
-gspread.auth.oauth_from_dict()
 type = st.secrets['gcp_service_account']['type']
 project_id = st.secrets['gcp_service_account']['project_id']
 private_key_id = st.secrets['gcp_service_account']['private_key_id']
