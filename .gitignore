@@ -1,1 +1,5 @@
-.streamlit/secrets.toml
+*
+
+!.gitignore
+!calcetto.py
+!requirements.txt
