@@ -2,4 +2,3 @@ pandas
 numpy
 gspread
 streamlit
-git+https://github.com/sfc-gh-jcarroll/st-connection-prpr.git#subdirectory=gsheets_connection
