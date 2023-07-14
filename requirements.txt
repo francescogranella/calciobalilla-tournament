@@ -3,3 +3,4 @@ numpy
 gspread
 streamlit
 gsheetsdb
+pyparsing
