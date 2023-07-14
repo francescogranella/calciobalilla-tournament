@@ -1,5 +1,5 @@
 pandas
 numpy
 gspread
-streamlit==1.22
+streamlit
 git+https://github.com/sfc-gh-jcarroll/st-connection-prpr.git#subdirectory=gsheets_connection
