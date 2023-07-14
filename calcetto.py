@@ -2,18 +2,8 @@ import gspread
 import streamlit as st
 import pandas as pd
 
-from streamlit_gsheets import GSheetsConnection
-
-st.title("Read Google Sheet as DataFrame")
-
-conn = st.experimental_connection("gsheets", type=GSheetsConnection)
-df = conn.read(worksheet="Example 1")
-
-st.dataframe(df)
-
-
-# gc = gspread.service_account()
-# sh = gc.open("calcetto-test")
+gc = gspread.service_account()
+sh = gc.open("calcetto-test")
 
 
 def _get_data(sh):
