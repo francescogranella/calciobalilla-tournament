@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import platform
 import plotly.express as px
+from scipy.optimize import leastsq
+
 
 if platform.system() == 'Windows':
     gc = gspread.service_account()
@@ -46,13 +48,17 @@ def get_names(df):
     return sorted(df.columns.to_list())
 
 
+def _error(x, scores, participation_matrix):
+    return scores - np.dot(participation_matrix,x)
+
+
 st.set_page_config(page_title='Streamlit App', page_icon=':bar_chart:', layout='centered')
 st.title('Calcetto never-ending tournament ⚽')
 
-tab1, tab2, tab3 = st.tabs(["// Input results //  ",  "// 📈 Data //  ", "  // Insert new players //  "])
+tab1, tab2, tab3 = st.tabs(["// Enter results //  ",  "// 📈 Data //  ", "  // Insert new players //  "])
 
 with tab1:
-    st.title('Input results')
+    st.title('Enter results')
 
     df = _get_data(sh)
     names = ['---'] + get_names(df)
@@ -103,11 +109,23 @@ with tab1:
 with tab2:
     st.title('📈 Data')
     df = _get_data(sh)
-    _df = df.mean().sort_values(ascending=False).round(3).reset_index()
-    _df.columns = ['Player', 'Avg. score']
-    # _df = _df.append(pd.DataFrame([['',' '*100]], columns=['Player', 'Avg. score']), ignore_index=True)
+
+    participation_matrix = np.sign(df).fillna(0)
+    scores = df.max(axis=1)
+    initial_estimate = np.zeros(df.shape[1])
+    added_value, _ = leastsq(_error, initial_estimate, args=(scores, participation_matrix))
+    added_value = (added_value - added_value.min()) / (added_value.max() - added_value.min()) * 10
+    added_value = pd.DataFrame(added_value, index=df.columns, columns=['added_value']).round(3)
+
+    avg_score = df.mean().to_frame().rename(columns={0:'avg_score'})
+
+    _df = pd.merge(avg_score, added_value, left_index=True, right_index=True, how='inner')\
+        .sort_values(by='added_value', ascending=False)\
+        .reset_index()\
+        .rename(columns={'index':'Player', 'avg_score':'Avg. score', 'added_value':'Added value, 0 to 10*'})
     _df.index = _df.index + 1
     st.dataframe(_df, width=1000)
+    st.markdown('_$^*$Takes into consideration the composition of teams_')
 
     _plot_df = pd.merge(df.count().to_frame(), df.mean().to_frame(), left_index=True, right_index=True).reset_index()
     _plot_df.columns = ['player', 'count', 'score']
@@ -136,7 +154,7 @@ with tab3:
 css = '''
 <style>
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-    font-size:1.5rem;
+    font-size:1.25rem;
     }
 </style>
 '''
