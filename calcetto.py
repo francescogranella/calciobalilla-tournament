@@ -21,17 +21,17 @@ else:
     universe_domain = st.secrets['gcp_service_account']['universe_domain']
 
     creds = dict(
-    type = type,
-    project_id = project_id,
-    private_key_id = private_key_id,
-    private_key = private_key,
-    client_email = client_email,
-    client_id = client_id,
-    auth_uri = auth_uri,
-    token_uri = token_uri,
-    auth_provider_x509_cert_url = auth_provider_x509_cert_url,
-    client_x509_cert_url = client_x509_cert_url,
-    universe_domain = universe_domain,
+        type=type,
+        project_id=project_id,
+        private_key_id=private_key_id,
+        private_key=private_key,
+        client_email=client_email,
+        client_id=client_id,
+        auth_uri=auth_uri,
+        token_uri=token_uri,
+        auth_provider_x509_cert_url=auth_provider_x509_cert_url,
+        client_x509_cert_url=client_x509_cert_url,
+        universe_domain=universe_domain,
     )
     gc = gspread.service_account_from_dict(creds)
 
@@ -60,26 +60,37 @@ with tab1:
     col1, col2 = st.columns(2)
     with col1:
         st.header('Team 1')
-        option1 = st.selectbox('Player 1', names)
-        option2 = st.selectbox('Player 2', names)
+        player1 = st.selectbox('Player 1', names)
+        player2 = st.selectbox('Player 2', names)
     with col2:
         st.header('Team 2')
-        option3 = st.selectbox('Player 3', names)
-        option4 = st.selectbox('Player 4', names)
+        player3 = st.selectbox('Player 3', names)
+        player4 = st.selectbox('Player 4', names)
 
     st.subheader('Score for *Team 1*')
     score = st.slider('', min_value=-10, max_value=10, step=1, value=0)
-    if score < 0:
-        st.write(f'Team 2 wins over Team 1 by {score}')
-    if score > 0:
-        st.write(f'Team 1 wins over Team 2 by {score}')
 
-    if st.button('Submit', 'submit-results'):
-        st.write(f'You selected options {option1}, {option2}, {option3}, and {option4}.')
+    players = [player1, player2, player3, player4]
+
+    # No action if inputs are not OK
+    if score == 0 or '---' in players or len(set(players))<4:
+        disabled = True
+    else:
+        disabled = False
+        if score < 0:
+            st.write(f'Team 2 wins over Team 1 by {score}')
+        if score > 0:
+            st.write(f'Team 1 wins over Team 2 by {score}')
+
+    # If inputs are OK, button is activated
+    if st.button('Submit', 'submit-results', disabled=disabled):
+        st.write(f'You selected players {player1}, {player2}, {player3}, and {player4}.')
 
         new_match = pd.DataFrame(columns=sh.sheet1.get_values()[0])
-        new_match.loc[0, 'Francesco G'] = 0
-        new_match.loc[0, 'Matteo C'] = 0
+        new_match.loc[0, player1] = score
+        new_match.loc[0, player2] = score
+        new_match.loc[0, player3] = -score
+        new_match.loc[0, player4] = -score
 
         df = pd.concat([df, new_match], axis=0)
         df = df.fillna('').apply(lambda x: x.astype(str))
@@ -98,9 +109,9 @@ with tab2:
     _df.index = _df.index + 1
     st.dataframe(_df, width=1000)
 
-    _plot_df = pd.merge(df.count().to_frame(), df.mean().to_frame(), left_index=True, right_index=True)
-    _plot_df.columns = ['Count', 'Avg. score']
-    fig = px.scatter(_plot_df['Count'], _plot_df['Avg. score'])
+    _plot_df = pd.merge(df.count().to_frame(), df.mean().to_frame(), left_index=True, right_index=True).reset_index()
+    _plot_df.columns = ['player', 'count', 'score']
+    fig = px.scatter(_plot_df, x='count', y='score', hover_data='player', labels=dict(count='Number of matches', score='Avg. score'))
     st.plotly_chart(fig, use_container_width=True, theme="streamlit")
 
 with tab3:
@@ -125,7 +136,7 @@ with tab3:
 css = '''
 <style>
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-    font-size:2rem;
+    font-size:1.5rem;
     }
 </style>
 '''
