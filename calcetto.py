@@ -1,17 +1,7 @@
 import gspread
 import streamlit as st
 import pandas as pd
-from google.oauth2 import service_account
-from gsheetsdb import connect
 
-# Create a connection object.
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=[
-        "https://www.googleapis.com/auth/spreadsheets",
-    ],
-)
-gspread.auth.oauth_from_dict()
 type = st.secrets['gcp_service_account']['type']
 project_id = st.secrets['gcp_service_account']['project_id']
 private_key_id = st.secrets['gcp_service_account']['private_key_id']
@@ -38,24 +28,9 @@ client_x509_cert_url = client_x509_cert_url,
 universe_domain = universe_domain,
 )
 
-# gc = gspread.auth.oauth_from_dict(creds)
 gc = gspread.service_account_from_dict(creds)
 sh = gc.open("calcetto-test")
-s
-# Perform SQL query on the Google Sheet.
-# Uses st.cache_data to only rerun when the query changes or after 10 min.
-# @st.cache_data(ttl=600)
-# def run_query(query):
-#     rows = conn.execute(query, headers=1)
-#     rows = rows.fetchall()
-#     return rows
-#
-# sheet_url = st.secrets["private_gsheets_url"]
-# rows = run_query(f'SELECT * FROM "{sheet_url}"')
-#
-# # Print results.
-# for row in rows:
-#     st.write(f"{row.name} has a :{row.pet}:")
+
 
 def _get_data(sh):
     return pd.DataFrame(sh.sheet1.get_values()[1:], columns=sh.sheet1.get_values()[0]).apply(pd.to_numeric)
