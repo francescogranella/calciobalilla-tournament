@@ -92,7 +92,7 @@ with tab1:
 
 with tab2:
     st.title('📈 Data')
-    df = _get_data()
+    df = _get_data(sh)
     _df = df.mean().sort_values(ascending=False).round(3).reset_index()
     _df.columns = ['Player', 'Avg. score']
     # _df = _df.append(pd.DataFrame([['',' '*100]], columns=['Player', 'Avg. score']), ignore_index=True)
