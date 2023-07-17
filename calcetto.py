@@ -4,9 +4,6 @@ import pandas as pd
 from google.oauth2 import service_account
 from gsheetsdb import connect
 
-# gc = gspread.service_account()
-# sh = gc.open("calcetto-test")
-
 # Create a connection object.
 credentials = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"],
@@ -14,7 +11,36 @@ credentials = service_account.Credentials.from_service_account_info(
         "https://www.googleapis.com/auth/spreadsheets",
     ],
 )
-conn = connect(credentials=credentials)
+gspread.auth.oauth_from_dict()
+type = st.secrets['gcp_service_account']['type']
+project_id = st.secrets['gcp_service_account']['project_id']
+private_key_id = st.secrets['gcp_service_account']['private_key_id']
+private_key = st.secrets['gcp_service_account']['private_key']
+client_email = st.secrets['gcp_service_account']['client_email']
+client_id = st.secrets['gcp_service_account']['client_id']
+auth_uri = st.secrets['gcp_service_account']['auth_uri']
+token_uri = st.secrets['gcp_service_account']['token_uri']
+auth_provider_x509_cert_url = st.secrets['gcp_service_account']['auth_provider_x509_cert_url']
+client_x509_cert_url = st.secrets['gcp_service_account']['client_x509_cert_url']
+universe_domain = st.secrets['gcp_service_account']['universe_domain']
+
+creds = dict(
+type = type,
+project_id = project_id,
+private_key_id = private_key_id,
+private_key = private_key,
+client_email = client_email,
+client_id = client_id,
+auth_uri = auth_uri,
+token_uri = token_uri,
+auth_provider_x509_cert_url = auth_provider_x509_cert_url,
+client_x509_cert_url = client_x509_cert_url,
+universe_domain = universe_domain,
+)
+
+# gc = gspread.auth.oauth_from_dict(creds)
+gc = gspread.service_account_from_dict(creds)
+sh = gc.open("calcetto-test")
 
 # Perform SQL query on the Google Sheet.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
