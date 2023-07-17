@@ -63,6 +63,8 @@ with tab1:
         option4 = st.selectbox('Player 4', names)
 
     st.subheader('Result')
+    score = st.slider('Score', min_value=-10, max_value=10, step=1, value=0)
+    st.write(score)
     col1, col2 = st.columns(2)
     with col1:
         int1 = st.number_input('Team 1', value=0, min_value=-10, max_value=10, step=1)
