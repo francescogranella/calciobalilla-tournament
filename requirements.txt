@@ -4,3 +4,4 @@ gspread
 streamlit
 gsheetsdb
 pyparsing
+plotly
