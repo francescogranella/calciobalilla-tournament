@@ -49,7 +49,7 @@ with tab1:
     st.title('Input results')
     st.subheader('Players')
 
-    df = _get_data()
+    df = _get_data(sh)
     names = ['---'] + get_names(df)
 
     col1, col2 = st.columns(2)
