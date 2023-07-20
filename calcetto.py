@@ -104,6 +104,12 @@ with tab1:
 
         st.write('Data updated!')
 
+
+        def clear_form():
+            st.session_state["Player 1"] = "---"
+            st.session_state["bar"] = ""
+
+
     st.write("\n\n\n\n\n\n\nWant to make a correction? Have ideas and suggestions? Drop a line to francesco.granella@eiee.org")
 
 with tab2:
@@ -126,6 +132,26 @@ with tab2:
     _df.index = _df.index + 1
     st.dataframe(_df, width=1000)
     st.markdown('_$^*$Takes into consideration the composition of teams_')
+
+    l = []
+    for i, row in df.iterrows():
+        _row = row.dropna()
+        winning = _row[_row > 0].index.to_list()
+        losing = _row[_row < 0].index.to_list()
+        if len(winning)==1:
+            winning += ['']
+        if len(losing)==1:
+            losing += ['']
+        l.append(
+            pd.DataFrame(winning + losing + [10,  int(10+_row.min())]).T
+        )
+    games = pd.concat(l, axis=0).dropna(axis=1)
+    if len(games.columns) == 6:
+        games.columns = ['Team 1', 'Team1', 'Team 2', 'Team2', 'Score 1', 'Score2']
+    latest_games = games.iloc[-5:]
+
+    st.write('Latest games')
+    st.dataframe(latest_games)
 
     _plot_df = pd.merge(df.count().to_frame(), df.mean().to_frame(), left_index=True, right_index=True).reset_index()
     _plot_df.columns = ['player', 'count', 'score']
