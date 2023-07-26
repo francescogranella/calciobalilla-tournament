@@ -63,33 +63,36 @@ with tab1:
     df = _get_data(sh)
     names = ['---'] + get_names(df)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.header('Team 1')
-        player1 = st.selectbox('Player 1', names)
-        player2 = st.selectbox('Player 2', names)
-    with col2:
-        st.header('Team 2')
-        player3 = st.selectbox('Player 3', names)
-        player4 = st.selectbox('Player 4', names)
+    form = st.form(key='form', clear_on_submit=True)
+    with form:
 
-    st.subheader('Score for *Team 1*')
-    score = st.slider('', min_value=-10, max_value=10, step=1, value=0)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.header('Team 1')
+            player1 = st.selectbox('Player 1', names)
+            player2 = st.selectbox('Player 2', names)
+        with col2:
+            st.header('Team 2')
+            player3 = st.selectbox('Player 3', names)
+            player4 = st.selectbox('Player 4', names)
 
-    players = [player1, player2, player3, player4]
+        st.subheader('Score for *Team 1*')
+        score = st.slider('', min_value=-10, max_value=10, step=1, value=0)
 
-    # No action if inputs are not OK
-    if score == 0 or '---' in players or len(set(players))<4:
-        disabled = True
-    else:
-        disabled = False
-        if score < 0:
-            st.write(f'Team 2 wins over Team 1 by {score}')
-        if score > 0:
-            st.write(f'Team 1 wins over Team 2 by {score}')
+        players = [player1, player2, player3, player4]
 
-    # If inputs are OK, button is activated
-    if st.button('Submit', 'submit-results', disabled=disabled):
+        # No action if inputs are not OK
+        if score == 0 or '---' in players or len(set(players))<4:
+            disabled = True
+        else:
+            disabled = False
+            if score < 0:
+                st.write(f'Team 2 wins over Team 1 by {score}')
+            if score > 0:
+                st.write(f'Team 1 wins over Team 2 by {score}')
+        # st.form_submit_button('Submit')
+        # If inputs are OK, button is activated
+    if form.form_submit_button('Submit', 'submit-results', disabled=disabled):
         st.write(f'You selected players {player1}, {player2}, {player3}, and {player4}.')
 
         new_match = pd.DataFrame(columns=sh.sheet1.get_values()[0])
@@ -108,7 +111,6 @@ with tab1:
         def clear_form():
             st.session_state["Player 1"] = "---"
             st.session_state["bar"] = ""
-
 
     st.write("\n\n\n\n\n\n\nWant to make a correction? Have ideas and suggestions? Drop a line to francesco.granella@eiee.org")
 
