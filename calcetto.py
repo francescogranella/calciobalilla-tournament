@@ -92,7 +92,7 @@ with tab1:
                 st.write(f'Team 1 wins over Team 2 by {score}')
         # st.form_submit_button('Submit')
         # If inputs are OK, button is activated
-    if form.form_submit_button('Submit', 'submit-results', disabled=disabled):
+    if form.form_submit_button('Submit', 'submit-results', disabled=False):
         st.write(f'You selected players {player1}, {player2}, {player3}, and {player4}.')
 
         new_match = pd.DataFrame(columns=sh.sheet1.get_values()[0])
