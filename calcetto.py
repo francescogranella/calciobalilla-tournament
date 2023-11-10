@@ -1,5 +1,6 @@
 import gspread
 import streamlit as st
+import networkx as nx
 import numpy as np
 import pandas as pd
 import platform
@@ -52,6 +53,31 @@ def _error(x, scores, participation_matrix):
     return scores - np.dot(participation_matrix,x)
 
 
+def get_centrality(data):
+    df = data.copy()
+    df = np.sign(np.abs(df))
+    df = df.dropna(how='all', axis=1)
+
+    l = []
+    for col in df.columns:
+        _df = df.groupby(col).sum().reset_index()
+        sorted_cols = sorted(_df.columns)
+        _df = _df[sorted_cols]
+        _df.index = [col]
+        l.append(_df)
+    m = pd.concat(l)
+    m.sort_index(inplace=True)
+
+    for col in m.columns:
+        m.loc[col, col] = 0
+
+    G = nx.from_pandas_adjacency(m)
+    weights = [G[u][v]['weight'] for u, v in G.edges()]
+    bcent = nx.betweenness_centrality(G, weight='weight')
+    bcent_df = pd.DataFrame({'Player': bcent.keys(), 'Centrality': bcent.values()})
+    return bcent_df
+
+
 st.set_page_config(page_title='Streamlit App', page_icon=':bar_chart:', layout='centered')
 st.title('Calcetto never-ending tournament ⚽')
 
@@ -76,23 +102,31 @@ with tab1:
             player3 = st.selectbox('Player 3', names)
             player4 = st.selectbox('Player 4', names)
 
-        st.subheader('Score for *Team 1*')
-        score = st.slider('', min_value=-10, max_value=10, step=1, value=0)
+        st.subheader('Score')
+        # score = st.slider('', min_value=-10, max_value=10, step=1, value=0)
+        score_str = st.select_slider('Final score', options=[str(f'10:{x}') for x in range(10)] + ['10:10'] + [str(f'{x}:10') for x in range(9,-1,-1)],
+                                     value='10:10',
+                                     label_visibility='hidden')
+        t1, t2 = score_str.split(':')
+        score = int(t1) - int(t2)
 
         players = [player1, player2, player3, player4]
 
         # No action if inputs are not OK
-        if score == 0 or '---' in players or len(set(players))<4:
-            disabled = True
-        else:
-            disabled = False
-            if score < 0:
-                st.write(f'Team 2 wins over Team 1 by {score}')
-            if score > 0:
-                st.write(f'Team 1 wins over Team 2 by {score}')
+        # if score == 0 or '---' in players or len(set(players))<4:
+        #     disabled = True
+        # else:
+        #     disabled = False
+        #     if score < 0:
+        #         st.write(f'Team 2 wins over Team 1 by {score}')
+        #     if score > 0:
+        #         st.write(f'Team 1 wins over Team 2 by {score}')
         # st.form_submit_button('Submit')
         # If inputs are OK, button is activated
-    if form.form_submit_button('Submit', 'submit-results', disabled=False):
+    if score_str == '10:10':
+       disabled = True
+    st.write(score_str)
+    if form.form_submit_button('Submit', 'submit-results', disabled=disabled):
         st.write(f'You selected players {player1}, {player2}, {player3}, and {player4}.')
 
         new_match = pd.DataFrame(columns=sh.sheet1.get_values()[0])
@@ -132,8 +166,10 @@ with tab2:
         .reset_index()\
         .rename(columns={'index':'Player', 'avg_score':'Avg. score', 'added_value':'Added value, 0 to 10*'})
     _df.index = _df.index + 1
+    cent_df = get_centrality(df)
+    _df = pd.merge(_df, cent_df, on='Player', how='left')
     st.dataframe(_df, width=1000)
-    st.markdown('_$^*$Takes into consideration the composition of teams_')
+    st.markdown('_$^*$Takes into consideration the composition of teams_. See Wiki for a definition of [centrality](https://en.wikipedia.org/wiki/Betweenness_centrality).')
 
     l = []
     for i, row in df.iterrows():
@@ -150,7 +186,7 @@ with tab2:
     games = pd.concat(l, axis=0).dropna(axis=1)
     if len(games.columns) == 6:
         games.columns = ['Team 1', 'Team1', 'Team 2', 'Team2', 'Score 1', 'Score2']
-    latest_games = games.iloc[-5:]
+    latest_games = games.iloc[-5:].reset_index(drop=True).sort_index(ascending=False).reset_index(drop=True)
 
     st.write('Latest games')
     st.dataframe(latest_games)
