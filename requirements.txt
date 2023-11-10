@@ -6,3 +6,4 @@ gsheetsdb
 pyparsing
 plotly
 scipy
+networkx
