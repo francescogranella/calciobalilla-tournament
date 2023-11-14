@@ -102,31 +102,23 @@ with tab1:
             player3 = st.selectbox('Player 3', names)
             player4 = st.selectbox('Player 4', names)
 
-        st.subheader('Score')
-        # score = st.slider('', min_value=-10, max_value=10, step=1, value=0)
-        score_str = st.select_slider('Final score', options=[str(f'10:{x}') for x in range(10)] + ['10:10'] + [str(f'{x}:10') for x in range(9,-1,-1)],
-                                     value='10:10',
-                                     label_visibility='hidden')
-        t1, t2 = score_str.split(':')
-        score = int(t1) - int(t2)
+        st.subheader('Score for *Team 1*')
+        score = st.slider('', min_value=-10, max_value=10, step=1, value=0)
 
         players = [player1, player2, player3, player4]
 
         # No action if inputs are not OK
-        # if score == 0 or '---' in players or len(set(players))<4:
-        #     disabled = True
-        # else:
-        #     disabled = False
-        #     if score < 0:
-        #         st.write(f'Team 2 wins over Team 1 by {score}')
-        #     if score > 0:
-        #         st.write(f'Team 1 wins over Team 2 by {score}')
+        if score == 0 or '---' in players or len(set(players)) < 4:
+            disabled = True
+        else:
+            disabled = False
+            if score < 0:
+                st.write(f'Team 2 wins over Team 1 by {score}')
+            if score > 0:
+                st.write(f'Team 1 wins over Team 2 by {score}')
         # st.form_submit_button('Submit')
         # If inputs are OK, button is activated
-    if score_str == '10:10':
-       disabled = True
-    st.write(score_str)
-    if form.form_submit_button('Submit', 'submit-results', disabled=disabled):
+    if form.form_submit_button('Submit', 'submit-results', disabled=False):
         st.write(f'You selected players {player1}, {player2}, {player3}, and {player4}.')
 
         new_match = pd.DataFrame(columns=sh.sheet1.get_values()[0])
