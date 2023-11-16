@@ -143,6 +143,7 @@ with tab1:
 with tab2:
     st.title('📈 Data')
     df = _get_data(sh)
+    df = df[df.columns[df.notna().sum() > 1]]
 
     participation_matrix = np.sign(df).fillna(0)
     scores = df.max(axis=1)
