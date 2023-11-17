@@ -88,6 +88,7 @@ with tab1:
 
     df = _get_data(sh)
     names = ['---'] + get_names(df)
+    names.remove('Esterni')
 
     form = st.form(key='form', clear_on_submit=True)
     with form:
