@@ -8,37 +8,40 @@ import plotly.express as px
 from scipy.optimize import leastsq
 
 
-if platform.system() == 'Windows':
-    gc = gspread.service_account()
-else:
-    type = st.secrets['gcp_service_account']['type']
-    project_id = st.secrets['gcp_service_account']['project_id']
-    private_key_id = st.secrets['gcp_service_account']['private_key_id']
-    private_key = st.secrets['gcp_service_account']['private_key']
-    client_email = st.secrets['gcp_service_account']['client_email']
-    client_id = st.secrets['gcp_service_account']['client_id']
-    auth_uri = st.secrets['gcp_service_account']['auth_uri']
-    token_uri = st.secrets['gcp_service_account']['token_uri']
-    auth_provider_x509_cert_url = st.secrets['gcp_service_account']['auth_provider_x509_cert_url']
-    client_x509_cert_url = st.secrets['gcp_service_account']['client_x509_cert_url']
-    universe_domain = st.secrets['gcp_service_account']['universe_domain']
-
-    creds = dict(
-        type=type,
-        project_id=project_id,
-        private_key_id=private_key_id,
-        private_key=private_key,
-        client_email=client_email,
-        client_id=client_id,
-        auth_uri=auth_uri,
-        token_uri=token_uri,
-        auth_provider_x509_cert_url=auth_provider_x509_cert_url,
-        client_x509_cert_url=client_x509_cert_url,
-        universe_domain=universe_domain,
-    )
-    gc = gspread.service_account_from_dict(creds)
-
-sh = gc.open("calcetto-app")
+# if platform.system() == 'Windows':
+#     gc = gspread.service_account()
+# else:
+#     type = st.secrets['gcp_service_account']['type']
+#     project_id = st.secrets['gcp_service_account']['project_id']
+#     private_key_id = st.secrets['gcp_service_account']['private_key_id']
+#     private_key = st.secrets['gcp_service_account']['private_key']
+#     client_email = st.secrets['gcp_service_account']['client_email']
+#     client_id = st.secrets['gcp_service_account']['client_id']
+#     auth_uri = st.secrets['gcp_service_account']['auth_uri']
+#     token_uri = st.secrets['gcp_service_account']['token_uri']
+#     auth_provider_x509_cert_url = st.secrets['gcp_service_account']['auth_provider_x509_cert_url']
+#     client_x509_cert_url = st.secrets['gcp_service_account']['client_x509_cert_url']
+#     universe_domain = st.secrets['gcp_service_account']['universe_domain']
+#
+#     creds = dict(
+#         type=type,
+#         project_id=project_id,
+#         private_key_id=private_key_id,
+#         private_key=private_key,
+#         client_email=client_email,
+#         client_id=client_id,
+#         auth_uri=auth_uri,
+#         token_uri=token_uri,
+#         auth_provider_x509_cert_url=auth_provider_x509_cert_url,
+#         client_x509_cert_url=client_x509_cert_url,
+#         universe_domain=universe_domain,
+#     )
+#     gc = gspread.service_account_from_dict(creds)
+#
+# sh = gc.open("calcetto-app")
+gc = gspread.service_account(
+    filename=r"calcetto-450813-f419fa7b6386.json")
+sh = gc.open("Calcetto forever")
 
 
 def _get_data(sh):
